@@ -74,6 +74,8 @@ export function decide(attempt: number, result: DeliveryResult, options: RetryPo
   return { action: 'retry', delayMs, reason: retryReason };
 }
 
+const IMF_FIXDATE = /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} \d{2}:\d{2}:\d{2} GMT$/;
+
 /**
  * Parse an HTTP Retry-After header (RFC 9110 section 10.2.3): either a number of
  * seconds or an HTTP date. Returns undefined for anything we cannot trust.
@@ -86,6 +88,10 @@ export function parseRetryAfter(header: string | null, nowMs: number): number | 
   if (/^\d+$/.test(trimmed)) {
     return Number(trimmed) * 1_000;
   }
+  // Only accept the IMF-fixdate form ("Sun, 06 Nov 1994 08:49:37 GMT").
+  // Date.parse on its own is far too lenient: it reads "1.5" and "-5" as dates
+  // in 2001, which would turn a malformed header into "retry immediately".
+  if (!IMF_FIXDATE.test(trimmed)) return undefined;
   const dateMs = Date.parse(trimmed);
   if (Number.isNaN(dateMs)) return undefined;
   return Math.max(0, dateMs - nowMs);

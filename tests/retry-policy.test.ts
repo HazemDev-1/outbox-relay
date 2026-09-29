@@ -96,7 +96,8 @@ describe('parseRetryAfter', () => {
     expect(parseRetryAfter('Wed, 31 Dec 2025 23:00:00 GMT', now)).toBe(0);
   });
 
-  it.each([null, '', '  ', 'soon', '-5', '1.5'])('ignores %j', (value) => {
+  // '-5' and '1.5' are regression cases: Date.parse accepted them as dates in 2001.
+  it.each([null, '', '  ', 'soon', '-5', '1.5', '2026-01-01', 'Thu, 01 Jan 2026 00:00:30 PST'])('ignores %j', (value) => {
     expect(parseRetryAfter(value, now)).toBeUndefined();
   });
 });
