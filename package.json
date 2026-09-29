@@ -1,0 +1,29 @@
+{
+  "name": "outbox-relay",
+  "version": "0.1.0",
+  "description": "Deliver events from a SQLite outbox table to HTTP endpoints with retries and backoff.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "outbox-relay": "dist/cli.js"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "check": "npm run lint && npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/node": "^22.15.0",
+    "eslint": "^9.39.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^3.2.0"
+  }
+}
