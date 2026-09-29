@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # 22.13 is the first 22.x where node:sqlite works without a flag.
+        node-version: ['22.13', '22', '24']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Smoke-test the built CLI
+        run: |
+          node dist/cli.js enqueue --db smoke.db --key smoke-1 --url http://127.0.0.1:9/unused --payload '{}'
+          node dist/cli.js status --db smoke.db
